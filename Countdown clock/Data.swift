@@ -33,7 +33,37 @@ public class TimeViewModel: ObservableObject {
     }
 }
 
+public class WidgetViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
+    let manager: CLLocationManager
+    override init() {
+        manager = CLLocationManager()
+        super.init()
+        manager.delegate = self
+        manager.distanceFilter = 100
+        manager.requestAlwaysAuthorization()
+    }
+    
+        
+    @Published public var location: CLLocation?
+    
+    public func requestLocation() {
+        DispatchQueue.main.async {
+            self.manager.startUpdatingLocation()
+        }
+    }
+    nonisolated public func locationManager(_ manager: CLLocationManager,
+                         didFailWithError error: Error) {
+        print(error)
+    }
 
+    public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        self.location = locations.last
+        
+    }
+
+}
+
+@MainActor
 public class StationViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var stations: [Station] = []
     
@@ -296,7 +326,7 @@ public class StationViewModel: NSObject, ObservableObject, CLLocationManagerDele
         print(error)
     }
 
-    public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    nonisolated public func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         print("location")
         Task {
             await self.updateItems(reloadWidget: true, location: locations.last)

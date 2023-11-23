@@ -48,7 +48,7 @@ struct UpdateIntent: LiveActivityIntent {
     //triggered by press to button
     func perform() async throws -> some IntentResult {
         
-        var vm = StationViewModel()
+        var vm = WidgetViewModel()
         
         let current = LiveActivityUtil.getCurrentStateData(forRecordId: recordId)
         let location = vm.manager.location

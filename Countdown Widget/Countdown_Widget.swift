@@ -24,11 +24,11 @@ struct Provider: IntentTimelineProvider {
         completion(entry)
     }
 
-    var widgetLocationManager = StationViewModel()
+
     func getTimeline(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         Task {
-            widgetLocationManager.requestLocation()
-            let stations = await StationViewModel.fetchStations(location: widgetLocationManager.location)
+            var widgetLocationManager = WidgetViewModel()
+            let stations = await StationViewModel.fetchStations(location: widgetLocationManager.manager.location)
                 
             var entries: [SecondEntry] = []
 
@@ -40,7 +40,7 @@ struct Provider: IntentTimelineProvider {
             var brooklyn: [Arrival] = []
             
             var station = stations[0]
-            if let location = widgetLocationManager.location {
+            if let location = widgetLocationManager.manager.location {
                 station = stations.sorted(by: {left, right in
                     location.distance(from: left.location) < location.distance(from: right.location)
                 })[0]
